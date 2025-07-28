@@ -12,7 +12,12 @@
 	<artifactId>lms</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>lms</name>
-	<packaging>pom</packaging>
+    <modules>
+        <module>api-gateway</module>
+        <module>Eureka-Server</module>
+		<module>ContentService</module>
+	</modules>
+    <packaging>pom</packaging>
 	<url/>
 	<licenses>
 		<license/>
