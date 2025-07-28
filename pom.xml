@@ -12,7 +12,10 @@
 	<artifactId>lms</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>lms</name>
-	<packaging>pom</packaging>
+    <modules>
+        <module>course-service</module>
+    </modules>
+    <packaging>pom</packaging>
 	<url/>
 	<licenses>
 		<license/>
@@ -28,7 +31,22 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<spring-cloud.version> 2023.0.1 </spring-cloud.version>
 	</properties>
+
+	<!-- used for Eureka server version reference for child -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>2023.0.1</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
