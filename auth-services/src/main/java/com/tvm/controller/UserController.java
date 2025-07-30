@@ -1,9 +1,12 @@
 package com.tvm.controller;
 
+import com.tvm.model.Role;
 import com.tvm.model.UserEntity;
 import com.tvm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,8 +36,14 @@ public class UserController
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userService.saveUser(user);
     }
+
+    ///register — Only STUDENT Can Register
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserEntity user){
+        if (!user.getRole().equals(Role.STUDENT)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Only STUDENT role allowed to register");
+        }
         if (userService.existsByUsername(user.getUsername())) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
@@ -42,4 +51,5 @@ public class UserController
         UserEntity savedUser = userService.saveUser(user);
         return ResponseEntity.ok(savedUser);
     }
+
 }

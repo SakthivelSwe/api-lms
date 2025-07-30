@@ -84,153 +84,30 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error","Token validation failed"));
         }
     }
-//    @GetMapping("/validate/{id}")
-//    public ResponseEntity<?> validateUserById(@PathVariable Long id)
-//    {
-//        if (id==null||id<=0)
-//        {
-//            return ResponseEntity.badRequest().body(Map.of("error","Invalid ID"));
-//        }
-//        //Get the currently logged-in username from JWT
-//        Authentication auth= SecurityContextHolder.getContext().getAuthentication();
-//        String currentUsername=auth.getName();
-//        //Find the user by id
-//        return userRepository.findById(id)
-//                .map(user->{
-//                    if (!user.getUsername().equals(currentUsername))
-//                    {
-//                        return ResponseEntity.badRequest().body(Map.of("error","Unauthorized to access this user's data"));
-//                    }
-//                    return ResponseEntity.ok(Map.of(
-//                            "id",user.getId(),
-//                            "username",user.getUsername(),
-//                            "role",user.getRole()
-//                    ));
-//                })
-//                .orElseGet(()->ResponseEntity.badRequest().body(Map.of("error", "User not found with ID: " + id)));
-//    }
-//    @GetMapping("validate/{id}")
-//    public ResponseEntity<?> validateByUserId(@PathVariable Long id)
-//    {
-//        if (id==null||id <= 0) {
-//            return ResponseEntity.badRequest().body(Map.of("error", "Invalid ID"));
-//        }
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        String currentUsername = auth.getName();
-//        boolean isAdmin = auth.getAuthorities().stream()
-//                .map(GrantedAuthority::getAuthority)
-//                .anyMatch(role -> role.equals("ROLE_ADMIN"));
-//        return userRepository.findById(id)
-//                .map(user -> {
-//                    if (!isAdmin && !user.getUsername().equals(currentUsername)) {
-//                        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-//                                Map.of("error", "Access denied: Cannot validate other user's data")
-//                        );
-//                    }
-//                    return ResponseEntity.ok(Map.of(
-//                            "id", user.getId(),
-//                            "username", user.getUsername(),
-//                            "role", user.getRole()
-//                    ));
-//                })
-//                .orElseGet(() -> ResponseEntity.badRequest()
-//                        .body(Map.of("error", "User not found with ID: " + id)));
-//    }
-//@GetMapping("/validate/{id}")
-//public ResponseEntity<?> validateUserById(@PathVariable Long id) {
-//    if (id == null || id <= 0) {
-//        return ResponseEntity.badRequest().body(Map.of("error", "Invalid ID"));
-//    }
-//
-//    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//    String currentUsername = auth.getName();
-//    var roles = auth.getAuthorities().stream()
-//            .map(GrantedAuthority::getAuthority)
-//            .toList();
-//
-//    boolean isAdmin = roles.contains("ROLE_ADMIN");
-//    boolean isInstructor = roles.contains("ROLE_INSTRUCTOR");
-//    boolean isStudent = roles.contains("ROLE_STUDENT");
-//
-//    return userRepository.findById(id)
-//            .map(targetUser -> {
-//                String targetUsername = targetUser.getUsername();
-//                String targetRole = String.valueOf(targetUser.getRole()); // assuming getRole() returns something like ROLE_STUDENT
-//
-//                // ✅ Allow ADMIN to access all
-//                if (isAdmin) {
-//                    return ResponseEntity.ok(Map.of(
-//                            "id", targetUser.getId(),
-//                            "username", targetUser.getUsername(),
-//                            "role", targetUser.getRole()
-//                    ));
-//                }
-//
-//
-//
-//
-//                // ✅ Allow INSTRUCTOR only if target user is STUDENT
-//                if (isInstructor || targetRole.equals("ROLE_STUDENT")) {
-//                    return ResponseEntity.ok(Map.of(
-//                            "id", targetUser.getId(),
-//                            "username", targetUser.getUsername(),
-//                            "role", targetUser.getRole()
-//                    ));
-//                } else if (isInstructor) {
-//                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                            .body(Map.of("error", "Instructors can only validate students"));
-//                }
-//
-//
-//                // ✅ Allow STUDENT to validate only their own ID
-//                if (isStudent && targetUsername.equals(currentUsername)) {
-//                    return ResponseEntity.ok(Map.of(
-//                            "id", targetUser.getId(),
-//                            "username", targetUser.getUsername(),
-//                            "role", targetUser.getRole()
-//                    ));
-//                }
-//
-//                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                        .body(Map.of("error", "Access denied"));
-//            })
-//            .orElseGet(() -> ResponseEntity.badRequest()
-//                    .body(Map.of("error", "User not found with ID: " + id)));
-//}
-@GetMapping("/validate/{id}")
-public ResponseEntity<?> validateUserById(@PathVariable Long id) {
-    if (id == null || id <= 0) {
-        return ResponseEntity.badRequest().body(Map.of("error", "Invalid ID"));
-    }
 
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    String currentUsername = auth.getName();
-    var roles = auth.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .toList();
+    @GetMapping("/validate/{id}")
+    public ResponseEntity<?> validateUserById(@PathVariable Long id) {
+        if (id == null || id <= 0) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid ID"));
+        }
 
-    boolean isAdmin = roles.contains("ROLE_ADMIN");
-    boolean isInstructor = roles.contains("ROLE_INSTRUCTOR");
-    boolean isStudent = roles.contains("ROLE_STUDENT");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = auth.getName();
+        var roles = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
 
-    return userRepository.findById(id)
-            .map(targetUser -> {
-                String targetUsername = targetUser.getUsername();
-                String targetRole = String.valueOf(targetUser.getRole());
+        boolean isAdmin = roles.contains("ROLE_ADMIN");
+        boolean isInstructor = roles.contains("ROLE_INSTRUCTOR");
+        boolean isStudent = roles.contains("ROLE_STUDENT");
 
-                // ✅ ADMIN can view anyone
-                if (isAdmin) {
-                    return ResponseEntity.ok(Map.of(
-                            "id", targetUser.getId(),
-                            "username", targetUser.getUsername(),
-                            "role", targetUser.getRole()
-                    ));
-                }
+        return userRepository.findById(id)
+                .map(targetUser -> {
+                    String targetUsername = targetUser.getUsername();
+                    String targetRole = String.valueOf(targetUser.getRole());
 
-                // ✅ INSTRUCTOR logic
-                if (isInstructor) {
-                    // Own details
-                    if (targetUsername.equals(currentUsername)) {
+                    // ✅ ADMIN can view anyone
+                    if (isAdmin) {
                         return ResponseEntity.ok(Map.of(
                                 "id", targetUser.getId(),
                                 "username", targetUser.getUsername(),
@@ -238,8 +115,33 @@ public ResponseEntity<?> validateUserById(@PathVariable Long id) {
                         ));
                     }
 
-                    // Only allow viewing STUDENT users
-                    if ("STUDENT".equals(targetRole)) {
+                    // ✅ INSTRUCTOR logic
+                    if (isInstructor) {
+                        // Own details
+                        if (targetUsername.equals(currentUsername)) {
+                            return ResponseEntity.ok(Map.of(
+                                    "id", targetUser.getId(),
+                                    "username", targetUser.getUsername(),
+                                    "role", targetUser.getRole()
+                            ));
+                        }
+
+                        // Only allow viewing STUDENT users
+                        if ("STUDENT".equals(targetRole)) {
+                            return ResponseEntity.ok(Map.of(
+                                    "id", targetUser.getId(),
+                                    "username", targetUser.getUsername(),
+                                    "role", targetUser.getRole()
+                            ));
+                        }
+
+                        // Not allowed to view other instructors or admins
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                .body(Map.of("error", "Instructors can only view student details and their own."));
+                    }
+
+                    // ✅ STUDENT can view only their own details
+                    if (isStudent && targetUsername.equals(currentUsername)) {
                         return ResponseEntity.ok(Map.of(
                                 "id", targetUser.getId(),
                                 "username", targetUser.getUsername(),
@@ -247,26 +149,12 @@ public ResponseEntity<?> validateUserById(@PathVariable Long id) {
                         ));
                     }
 
-                    // Not allowed to view other instructors or admins
                     return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                            .body(Map.of("error", "Instructors can only view student details and their own."));
-                }
-
-                // ✅ STUDENT can view only their own details
-                if (isStudent && targetUsername.equals(currentUsername)) {
-                    return ResponseEntity.ok(Map.of(
-                            "id", targetUser.getId(),
-                            "username", targetUser.getUsername(),
-                            "role", targetUser.getRole()
-                    ));
-                }
-
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(Map.of("error", "Access denied"));
-            })
-            .orElseGet(() -> ResponseEntity.badRequest()
-                    .body(Map.of("error", "User not found with ID: " + id)));
-}
+                            .body(Map.of("error", "Access denied"));
+                })
+                .orElseGet(() -> ResponseEntity.badRequest()
+                        .body(Map.of("error", "User not found with ID: " + id)));
+    }
 
 
 }

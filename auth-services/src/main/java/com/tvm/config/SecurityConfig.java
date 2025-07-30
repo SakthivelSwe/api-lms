@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig{
     @Autowired
     private JwtFilter jwtFilter;
@@ -29,9 +31,9 @@ public class SecurityConfig{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
-                        .requestMatchers("/api/users/**").authenticated()
-                        .requestMatchers("/home").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/rest/register").permitAll() // anyone can hit register
+                        .requestMatchers(HttpMethod.POST, "/rest/admin/create-user").hasRole("ADMIN")
+                        .requestMatchers("/rest/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 //.formLogin(form -> form.permitAll().defaultSuccessUrl("/dashboard"))
